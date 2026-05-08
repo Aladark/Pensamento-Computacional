@@ -141,7 +141,7 @@ pip install -r requirements.txt
 python app.py
 ```
 
-Acesse em: [http://localhost:5000](http://localhost:5000)
+Acesse em: [http://localhost:]
 
 > O banco de dados SQLite e os dados de demonstração são criados automaticamente na primeira execução.
 
