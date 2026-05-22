@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Recomendações IA - PAI{% endblock %}
+{% block page_title %}Recomendações Inteligentes{% endblock %}
+{% block content %}
+{% if perfil %}
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-value">{{ perfil.media_geral }}</div>
+            <div class="stat-label"><i class="bi bi-graph-up text-primary me-1"></i>Média Geral</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="border-color:#2e7d32">
+            <div class="stat-value" style="color:#2e7d32">{{ perfil.aprovadas }}</div>
+            <div class="stat-label"><i class="bi bi-check-circle me-1 text-success"></i>Aprovadas</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="border-color:#f57f17">
+            <div class="stat-value" style="color:#f57f17">{{ perfil.recuperacao }}</div>
+            <div class="stat-label"><i class="bi bi-exclamation-circle me-1 text-warning"></i>Em Recuperação</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="border-color:#c62828">
+            <div class="stat-value" style="color:#c62828">{{ perfil.reprovadas }}</div>
+            <div class="stat-label"><i class="bi bi-x-circle me-1 text-danger"></i>Reprovadas</div>
+        </div>
+    </div>
+</div>
+{% endif %}
+<div class="card">
+    <div class="card-header bg-white py-3">
+        <i class="bi bi-stars text-warning me-2"></i>Análise e Recomendações Personalizadas
+    </div>
+    <div class="card-body">
+        {% for rec in recomendacoes %}
+        <div class="alert alert-{{ rec.tipo }} d-flex align-items-start gap-3 mb-3">
+            <div>
+                {% if rec.tipo == 'success' %}<i class="bi bi-check-circle-fill fs-5"></i>
+                {% elif rec.tipo == 'warning' %}<i class="bi bi-exclamation-triangle-fill fs-5"></i>
+                {% elif rec.tipo == 'danger' %}<i class="bi bi-x-circle-fill fs-5"></i>
+                {% else %}<i class="bi bi-info-circle-fill fs-5"></i>{% endif %}
+            </div>
+            <div>
+                <strong>{{ rec.titulo }}</strong><br>
+                <span class="small">{{ rec.mensagem }}</span>
+            </div>
+        </div>
+        {% else %}
+        <div class="text-center text-muted py-5">
+            <i class="bi bi-stars" style="font-size:3rem"></i>
+            <p class="mt-3">Nenhuma recomendação disponível no momento.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

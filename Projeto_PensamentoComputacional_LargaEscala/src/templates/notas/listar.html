@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Notas - PAI{% endblock %}
+{% block page_title %}Notas{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <p class="text-muted mb-0">{{ notas|length }} registro(s)</p>
+    {% if current_user.papel in ['coordenador', 'professor'] %}
+    <a href="{{ url_for('notas.lancar') }}" class="btn btn-primary">
+        <i class="bi bi-pencil-square me-2"></i>Lançar Notas
+    </a>
+    {% endif %}
+</div>
+<div class="card">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    {% if current_user.papel != 'aluno' %}<th>Aluno</th>{% endif %}
+                    <th>Disciplina</th><th>P1</th><th>P2</th><th>P3</th><th>Média</th><th>Frequência</th><th>Situação</th>
+                    {% if current_user.papel in ['coordenador', 'professor'] %}<th>Ações</th>{% endif %}
+                </tr>
+            </thead>
+            <tbody>
+            {% for nota in notas %}
+            <tr>
+                {% if current_user.papel != 'aluno' %}<td class="fw-semibold">{{ nota.aluno.nome }}</td>{% endif %}
+                <td>{{ nota.disciplina.nome }}</td>
+                <td>{{ nota.nota_p1 or '—' }}</td>
+                <td>{{ nota.nota_p2 or '—' }}</td>
+                <td>{{ nota.nota_p3 or '—' }}</td>
+                <td class="fw-bold">{{ '%.1f'|format(nota.media) if nota.media else '—' }}</td>
+                <td>{{ nota.frequencia }}%</td>
+                <td>
+                    {% if nota.situacao == 'Aprovado' %}<span class="badge bg-success">{{ nota.situacao }}</span>
+                    {% elif nota.situacao in ['Reprovado', 'Reprovado por Falta'] %}<span class="badge bg-danger">{{ nota.situacao }}</span>
+                    {% elif nota.situacao == 'Recuperação' %}<span class="badge bg-warning text-dark">{{ nota.situacao }}</span>
+                    {% else %}<span class="badge bg-secondary">—</span>{% endif %}
+                </td>
+                {% if current_user.papel in ['coordenador', 'professor'] %}
+                <td><a href="{{ url_for('notas.editar', id=nota.id) }}" class="btn btn-sm btn-outline-primary">Editar</a></td>
+                {% endif %}
+            </tr>
+            {% else %}
+            <tr><td colspan="9" class="text-center text-muted py-4">Nenhuma nota encontrada.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

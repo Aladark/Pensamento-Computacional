@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - PAI{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block content %}
+<div class="row g-4 mb-4">
+{% if current_user.papel == "aluno" %}
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-value">{{ media_geral }}</div>
+            <div class="stat-label"><i class="bi bi-graph-up text-primary me-1"></i>Média Geral</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="border-color:#2e7d32">
+            <div class="stat-value" style="color:#2e7d32">{{ aprovadas }}</div>
+            <div class="stat-label"><i class="bi bi-check-circle text-success me-1"></i>Disciplinas Aprovadas</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="border-color:#f57f17">
+            <div class="stat-value" style="color:#f57f17">{{ total }}</div>
+            <div class="stat-label"><i class="bi bi-book text-warning me-1"></i>Total de Disciplinas</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="border-color:#7b1fa2">
+            <div class="stat-value" style="color:#7b1fa2">{{ total - aprovadas }}</div>
+            <div class="stat-label"><i class="bi bi-exclamation-triangle me-1" style="color:#7b1fa2"></i>Em Andamento/Atenção</div>
+        </div>
+    </div>
+
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-clipboard-data-fill text-primary me-2"></i>Minhas Notas</span>
+                <a href="{{ url_for('recomendacoes.index') }}" class="btn btn-sm btn-primary">
+                    <i class="bi bi-stars me-1"></i>Ver Recomendações IA
+                </a>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Disciplina</th><th>P1</th><th>P2</th><th>P3</th><th>Média</th><th>Frequência</th><th>Situação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for nota in notas %}
+                    <tr>
+                        <td class="fw-semibold">{{ nota.disciplina.nome }}</td>
+                        <td>{{ nota.nota_p1 or '—' }}</td>
+                        <td>{{ nota.nota_p2 or '—' }}</td>
+                        <td>{{ nota.nota_p3 or '—' }}</td>
+                        <td class="fw-bold">{{ nota.media or '—' }}</td>
+                        <td>{{ nota.frequencia }}%</td>
+                        <td>
+                            {% if nota.situacao == 'Aprovado' %}
+                            <span class="badge bg-success badge-situacao">{{ nota.situacao }}</span>
+                            {% elif nota.situacao == 'Reprovado' or nota.situacao == 'Reprovado por Falta' %}
+                            <span class="badge bg-danger badge-situacao">{{ nota.situacao }}</span>
+                            {% elif nota.situacao == 'Recuperação' %}
+                            <span class="badge bg-warning text-dark badge-situacao">{{ nota.situacao }}</span>
+                            {% else %}
+                            <span class="badge bg-secondary badge-situacao">—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="7" class="text-center text-muted py-4">Nenhuma nota registrada.</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+{% elif current_user.papel == "professor" %}
+    <div class="col-md-4">
+        <div class="stat-card">
+            <div class="stat-value">{{ disciplinas|length }}</div>
+            <div class="stat-label"><i class="bi bi-book-fill text-primary me-1"></i>Minhas Disciplinas</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card" style="border-color:#2e7d32">
+            <div class="stat-value" style="color:#2e7d32">{{ total_alunos }}</div>
+            <div class="stat-label"><i class="bi bi-people-fill text-success me-1"></i>Total de Alunos</div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-white py-3"><i class="bi bi-book-fill text-primary me-2"></i>Minhas Disciplinas</div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light"><tr><th>Código</th><th>Nome</th><th>Alunos Matriculados</th><th>Ações</th></tr></thead>
+                    <tbody>
+                    {% for d in disciplinas %}
+                    <tr>
+                        <td><span class="badge bg-primary">{{ d.codigo }}</span></td>
+                        <td class="fw-semibold">{{ d.nome }}</td>
+                        <td>{{ d.alunos|length }}</td>
+                        <td><a href="{{ url_for('disciplinas.detalhe', id=d.id) }}" class="btn btn-sm btn-outline-primary">Ver Detalhes</a></td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+{% else %}
+    <div class="col-md-4">
+        <div class="stat-card">
+            <div class="stat-value">{{ total_alunos }}</div>
+            <div class="stat-label"><i class="bi bi-people-fill text-primary me-1"></i>Total de Alunos</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card" style="border-color:#2e7d32">
+            <div class="stat-value" style="color:#2e7d32">{{ total_disciplinas }}</div>
+            <div class="stat-label"><i class="bi bi-book-fill text-success me-1"></i>Disciplinas Ativas</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card" style="border-color:#f57f17">
+            <div class="stat-value" style="color:#f57f17">{{ total_notas }}</div>
+            <div class="stat-label"><i class="bi bi-clipboard-data text-warning me-1"></i>Registros de Notas</div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-white py-3 d-flex justify-content-between">
+                <span><i class="bi bi-speedometer2 text-primary me-2"></i>Acesso Rápido — Coordenação</span>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <a href="{{ url_for('relatorios.index') }}" class="btn btn-outline-primary w-100 py-3">
+                            <i class="bi bi-bar-chart-fill d-block mb-1" style="font-size:1.5rem"></i>Relatórios
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{{ url_for('disciplinas.nova') }}" class="btn btn-outline-success w-100 py-3">
+                            <i class="bi bi-plus-circle-fill d-block mb-1" style="font-size:1.5rem"></i>Nova Disciplina
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{{ url_for('notas.lancar') }}" class="btn btn-outline-warning w-100 py-3">
+                            <i class="bi bi-pencil-square d-block mb-1" style="font-size:1.5rem"></i>Lançar Notas
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{{ url_for('recomendacoes.index') }}" class="btn btn-outline-info w-100 py-3">
+                            <i class="bi bi-stars d-block mb-1" style="font-size:1.5rem"></i>Recomendações IA
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+</div>
+{% endblock %}

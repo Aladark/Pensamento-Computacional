@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}{{ disciplina.nome }} - PAI{% endblock %}
+{% block page_title %}{{ disciplina.nome }}{% endblock %}
+{% block content %}
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="mb-3">
+                    <span class="badge bg-primary fs-6">{{ disciplina.codigo }}</span>
+                </div>
+                <h5 class="fw-bold">{{ disciplina.nome }}</h5>
+                <p class="text-muted">{{ disciplina.descricao or 'Sem descrição.' }}</p>
+                <hr>
+                <div class="d-flex flex-column gap-2">
+                    <div><i class="bi bi-person-fill text-primary me-2"></i><strong>Professor:</strong> {{ disciplina.professor.nome if disciplina.professor else 'Não atribuído' }}</div>
+                    <div><i class="bi bi-clock-fill text-primary me-2"></i><strong>Carga Horária:</strong> {{ disciplina.carga_horaria }}h</div>
+                    <div><i class="bi bi-people-fill text-primary me-2"></i><strong>Alunos:</strong> {{ disciplina.alunos|length }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-white py-3"><i class="bi bi-clipboard-data-fill text-primary me-2"></i>Notas dos Alunos</div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr><th>Aluno</th><th>P1</th><th>P2</th><th>P3</th><th>Média</th><th>Freq.</th><th>Situação</th></tr>
+                    </thead>
+                    <tbody>
+                    {% for nota in notas %}
+                    <tr>
+                        <td class="fw-semibold">{{ nota.aluno.nome }}</td>
+                        <td>{{ nota.nota_p1 or '—' }}</td>
+                        <td>{{ nota.nota_p2 or '—' }}</td>
+                        <td>{{ nota.nota_p3 or '—' }}</td>
+                        <td class="fw-bold">{{ nota.media or '—' }}</td>
+                        <td>{{ nota.frequencia }}%</td>
+                        <td>
+                            {% if nota.situacao == 'Aprovado' %}<span class="badge bg-success">{{ nota.situacao }}</span>
+                            {% elif nota.situacao in ['Reprovado', 'Reprovado por Falta'] %}<span class="badge bg-danger">{{ nota.situacao }}</span>
+                            {% elif nota.situacao == 'Recuperação' %}<span class="badge bg-warning text-dark">{{ nota.situacao }}</span>
+                            {% else %}<span class="badge bg-secondary">—</span>{% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="7" class="text-center text-muted py-4">Nenhuma nota lançada.</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

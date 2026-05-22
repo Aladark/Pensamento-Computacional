@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Relatórios - PAI{% endblock %}
+{% block page_title %}Painel de Relatórios{% endblock %}
+{% block content %}
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-value">{{ total_alunos }}</div>
+            <div class="stat-label"><i class="bi bi-people-fill text-primary me-1"></i>Total de Alunos</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="border-color:#2e7d32">
+            <div class="stat-value" style="color:#2e7d32">{{ total_disciplinas }}</div>
+            <div class="stat-label"><i class="bi bi-book-fill text-success me-1"></i>Disciplinas</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="border-color:#f57f17">
+            <div class="stat-value" style="color:#f57f17">{{ media_plataforma }}</div>
+            <div class="stat-label"><i class="bi bi-graph-up text-warning me-1"></i>Média da Plataforma</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="border-color:#7b1fa2">
+            <div class="stat-value" style="color:#7b1fa2">{{ aprovados_total }}</div>
+            <div class="stat-label"><i class="bi bi-check-circle me-1" style="color:#7b1fa2"></i>Total Aprovações</div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header bg-white py-3"><i class="bi bi-bar-chart-fill text-primary me-2"></i>Estatísticas por Disciplina</div>
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr><th>Disciplina</th><th>Alunos</th><th>Média Turma</th><th>Maior</th><th>Menor</th><th>Desvio Padrão</th><th>Aprovação</th><th>Detalhes</th></tr>
+            </thead>
+            <tbody>
+            {% for r in relatorios %}
+            <tr>
+                <td class="fw-semibold">{{ r.disciplina.nome }}</td>
+                <td>{{ r.stats.total }}</td>
+                <td>
+                    <span class="fw-bold {% if r.stats.media_turma >= 7 %}text-success{% elif r.stats.media_turma >= 5 %}text-warning{% else %}text-danger{% endif %}">
+                        {{ r.stats.media_turma }}
+                    </span>
+                </td>
+                <td class="text-success fw-semibold">{{ r.stats.maior_nota }}</td>
+                <td class="text-danger fw-semibold">{{ r.stats.menor_nota }}</td>
+                <td>{{ r.stats.desvio_padrao }}</td>
+                <td>
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="progress flex-grow-1" style="height:8px;min-width:60px">
+                            <div class="progress-bar {% if r.stats.percentual_aprovacao >= 70 %}bg-success{% elif r.stats.percentual_aprovacao >= 50 %}bg-warning{% else %}bg-danger{% endif %}"
+                                 style="width:{{ r.stats.percentual_aprovacao }}%"></div>
+                        </div>
+                        <small>{{ r.stats.percentual_aprovacao }}%</small>
+                    </div>
+                </td>
+                <td><a href="{{ url_for('disciplinas.detalhe', id=r.disciplina.id) }}" class="btn btn-sm btn-outline-primary">Ver</a></td>
+            </tr>
+            {% else %}
+            <tr><td colspan="8" class="text-center text-muted py-4">Sem dados.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Disciplinas - PAI{% endblock %}
+{% block page_title %}Disciplinas{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <p class="text-muted mb-0">{{ disciplinas|length }} disciplina(s) encontrada(s)</p>
+    {% if current_user.papel in ['coordenador', 'professor'] %}
+    <a href="{{ url_for('disciplinas.nova') }}" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-2"></i>Nova Disciplina
+    </a>
+    {% endif %}
+</div>
+<div class="row g-4">
+{% for d in disciplinas %}
+<div class="col-md-6 col-lg-4">
+    <div class="card h-100">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <span class="badge bg-primary">{{ d.codigo }}</span>
+                <small class="text-muted">{{ d.carga_horaria }}h</small>
+            </div>
+            <h5 class="fw-bold mb-1">{{ d.nome }}</h5>
+            <p class="text-muted small mb-3">{{ d.descricao or 'Sem descrição.' }}</p>
+            <div class="d-flex align-items-center justify-content-between">
+                <small class="text-muted">
+                    <i class="bi bi-person-fill me-1"></i>
+                    {{ d.professor.nome if d.professor else 'Sem professor' }}
+                </small>
+                <small class="text-muted">
+                    <i class="bi bi-people me-1"></i>{{ d.alunos|length }} alunos
+                </small>
+            </div>
+        </div>
+        <div class="card-footer bg-white border-0 pt-0 d-flex gap-2">
+            <a href="{{ url_for('disciplinas.detalhe', id=d.id) }}" class="btn btn-sm btn-outline-primary flex-grow-1">Ver Detalhes</a>
+            {% if current_user.papel == 'aluno' and d not in current_user.disciplinas %}
+            <form method="POST" action="{{ url_for('disciplinas.matricular', id=d.id) }}" class="flex-grow-1">
+                <button type="submit" class="btn btn-sm btn-success w-100">Matricular-se</button>
+            </form>
+            {% elif current_user.papel == 'aluno' %}
+            <span class="btn btn-sm btn-outline-success flex-grow-1 disabled">Matriculado</span>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="col-12">
+    <div class="card">
+        <div class="card-body text-center py-5">
+            <i class="bi bi-book text-muted" style="font-size:3rem"></i>
+            <p class="text-muted mt-3">Nenhuma disciplina encontrada.</p>
+        </div>
+    </div>
+</div>
+{% endfor %}
+</div>
+{% endblock %}
