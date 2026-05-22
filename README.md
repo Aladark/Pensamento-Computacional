@@ -40,6 +40,4 @@ O Pensamento Computacional:
 - É aplicável em diversas áreas além da computação, como **ciências, engenharia, educação e negócios**.  
 - Prepara os estudantes para o mundo digital e para lidar com desafios complexos da sociedade moderna.  
 
----
 
-## 📂 Estrutura do Repositório
